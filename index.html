@@ -14,16 +14,21 @@
             --vapor-pink: #F472B6;
             --vapor-cyan: #2DD4BF;
             --vapor-purple: #A78BFA;
+            --bg-dark: #111827;
+            --bg-medium: #1F2937;
+            --text-light: #E5E7EB;
+            --text-medium: #9CA3AF;
+            --text-dark: #4B5563;
         }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #111827;
-            color: #E5E7EB;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
         }
         .preset-btn {
             transition: all 0.3s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            border: 1px solid #374151;
+            border: 1px solid var(--bg-medium);
         }
         .preset-btn:hover {
             transform: translateY(-2px);
@@ -50,24 +55,31 @@
         }
         .axis path,
         .axis line {
-            stroke: #4B5563;
+            stroke: var(--text-dark);
         }
         .axis text {
-            fill: #9CA3AF;
-            font-size: 0.75rem;
+            fill: var(--text-medium);
+            font-size: 0.8rem;
         }
         .grid-line {
             stroke: #374151;
+            stroke-opacity: 0.5;
             stroke-dasharray: 2,2;
         }
         .zero-db-line {
-            stroke: #6B7280;
+            stroke: var(--text-medium);
             stroke-width: 1.5px;
         }
         .response-curve {
             fill: none;
-            stroke-width: 3;
+            stroke-width: 3.5;
             filter: url(#glow);
+        }
+        #eq-params-display {
+            display: grid;
+            grid-template-columns: 0.8fr 1fr 1fr 1fr;
+            gap: 0.5rem 1rem;
+            font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
         }
     </style>
 </head>
@@ -85,8 +97,13 @@
                 <div id="visualizer" class="w-full h-64 md:h-96">
                     <svg id="eq-svg" width="100%" height="100%">
                         <defs>
+                            <linearGradient id="curve-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="var(--vapor-purple)" />
+                                <stop offset="50%" stop-color="var(--vapor-pink)" />
+                                <stop offset="100%" stop-color="var(--vapor-cyan)" />
+                            </linearGradient>
                             <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                                <feGaussianBlur stdDeviation="3.5" result="coloredBlur"></feGaussianBlur>
+                                <feGaussianBlur stdDeviation="4" result="coloredBlur"></feGaussianBlur>
                                 <feMerge>
                                     <feMergeNode in="coloredBlur"></feMergeNode>
                                     <feMergeNode in="SourceGraphic"></feMergeNode>
@@ -120,7 +137,7 @@
                     <!-- EQ Parameters -->
                     <div>
                         <h3 class="text-xl font-bold mb-4 text-white">EQ Parameters</h3>
-                        <div id="eq-params-display" class="space-y-2 text-gray-300 font-mono text-sm">
+                        <div id="eq-params-display" class="space-y-2 text-gray-300 text-sm">
                             <!-- Parameter details will be injected here -->
                         </div>
                     </div>
@@ -150,7 +167,6 @@
             // --- Listening Styles ---
             'Fuller Bass & Warmth': {
                 category: 'style',
-                color: '#2DD4BF', // Teal
                 short_description: 'Adds weight and richness to the low-end.',
                 bands: [
                     { type: 'Low Shelf', frequency: 120, gain: 3.5, q: 0.71 },
@@ -163,7 +179,6 @@
             },
             'Energetic & Forward': {
                 category: 'style',
-                color: '#F43F5E', // Rose
                 short_description: 'Brings vocals and lead instruments to the front.',
                 bands: [
                     { type: 'Peak', frequency: 1500, gain: 2.0, q: 1.5 },
@@ -177,7 +192,6 @@
             },
             'Crisp Vocals & Detail': {
                 category: 'style',
-                color: '#60A5FA', // Blue
                 short_description: 'Enhances vocal clarity and instrumental detail.',
                 bands: [
                     { type: 'Peak', frequency: 250, gain: -2.0, q: 1.4 },
@@ -191,7 +205,6 @@
             },
             'Smooth & Relaxed': {
                 category: 'style',
-                color: '#A78BFA', // Violet
                 short_description: 'Reduces harshness for easy, non-fatiguing listening.',
                 bands: [
                     { type: 'Peak', frequency: 2500, gain: -2.0, q: 1.5 },
@@ -204,7 +217,6 @@
             },
             'Late Night Listening': {
                 category: 'style',
-                color: '#475569', // Slate
                 short_description: 'Balances sound for low-volume clarity.',
                 bands: [
                     { type: 'Low Shelf', frequency: 150, gain: -4.0, q: 0.7 },
@@ -218,7 +230,6 @@
             },
             'Theater (Movies)': {
                 category: 'style',
-                color: '#F59E0B', // Amber
                 short_description: 'Boosts dialogue clarity and low-end impact.',
                 bands: [
                     { type: 'Highpass', frequency: 30, gain: 0, q: 1.0 },
@@ -232,7 +243,6 @@
             },
             'Analytical & Reference': {
                 category: 'style',
-                color: '#E5E7EB', // Gray-200
                 short_description: 'A flat curve to hear the audio as intended.',
                 bands: [],
                 details: {
@@ -242,7 +252,6 @@
             },
             'Tube Amp Simulation': {
                 category: 'style',
-                color: '#F97316', // Orange-500
                 short_description: 'Adds vintage warmth and smooths high-end.',
                 bands: [
                     { type: 'Peak', frequency: 200, gain: 1.5, q: 0.8 },
@@ -256,7 +265,6 @@
             },
             'Gaming': {
                 category: 'style',
-                color: '#00FFFF', // Cyan
                 short_description: 'Highlights positional cues like footsteps.',
                 bands: [
                     { type: 'Peak', frequency: 60, gain: 2.0, q: 1.0 },
@@ -270,222 +278,40 @@
                 }
             },
             // --- Music Genres ---
-            'Classic Rock': {
+            'Classic Rock': { category: 'genre', short_description: 'A classic "smiley face" curve for punch and crunch.', bands: [ { type: 'Peak', frequency: 100, gain: 2.0, q: 1.0 }, { type: 'Peak', frequency: 1500, gain: 2.5, q: 1.2 }, { type: 'Peak', frequency: 4000, gain: 1.5, q: 2.0 }, ], details: { science: "Often called a 'smiley face' curve, this boosts the bass for punchy kick drums and bass guitars, and the upper-mids to bring out the crunch of electric guitars and the snap of the snare.", tuning: "For 70s rock with less sub-bass, focus the low-end boost around 120-150Hz. For modern rock, you can add a high-shelf filter above 10kHz for more 'air'." } },
+            'Pop': { category: 'genre', short_description: 'Clean, powerful bass with bright, airy vocals.', bands: [ { type: 'Low Shelf', frequency: 80, gain: 2.5, q: 0.71 }, { type: 'Peak', frequency: 3000, gain: 2.0, q: 2.0 }, { type: 'High Shelf', frequency: 12000, gain: 3.0, q: 0.71 }, ], details: { science: "Modern pop music relies on a strong, clean low-end and bright, clear vocals. This preset provides a solid sub-bass foundation, a vocal clarity boost, and a high-shelf for that polished 'sheen' and 'air'.", tuning: "The high-shelf can exaggerate sibilance on some tracks; if so, change it to a peak filter around 8-10kHz instead. The bass shelf can be adjusted to taste for more or less thump." } },
+            'Jazz': { category: 'genre', short_description: 'Natural timbre with detailed highs and warm mids.', bands: [ { type: 'Peak', frequency: 200, gain: 1.5, q: 1.0 }, { type: 'Peak', frequency: 2500, gain: -1.5, q: 2.0 }, { type: 'Peak', frequency: 7000, gain: 2.0, q: 3.0 }, ], details: { science: "This preset aims for a natural, dynamic sound. A small boost in the low-mids adds body to upright bass and piano. A slight dip in the presence region prevents horns from sounding too harsh, while a narrow peak in the treble brings out the intricate details of cymbals and brushes.", tuning: "For older jazz recordings, you might want to cut some frequencies below 60Hz to reduce rumble. For more saxophone presence, slightly reduce the 2500Hz cut." } },
+            'Metal': { category: 'genre', short_description: 'Aggressive sound with scooped mids and sharp attack.', bands: [ { type: 'Peak', frequency: 80, gain: 3.0, q: 1.2 }, { type: 'Peak', frequency: 800, gain: -4.0, q: 1.0 }, { type: 'Peak', frequency: 4000, gain: 3.5, q: 1.5 }, ], details: { science: "The quintessential 'scooped mids' profile for metal. It boosts the low end for powerful kick drums and bass, makes a deep cut in the midrange to reduce 'boxiness' and make room for distorted guitars, and boosts the upper-mids for aggressive guitar attack and vocal clarity.", tuning: "The 800Hz cut is defining; move it between 500Hz and 1kHz to find the sweet spot. For more 'djent' or modern metal tones, make the Q on the 80Hz boost narrower (e.g., 1.8)." } },
+            'Desert Metal': { category: 'genre', short_description: 'Thick, fuzzy, and sludgy low-mids.', bands: [ { type: 'Low Shelf', frequency: 100, gain: 2.0, q: 0.7 }, { type: 'Peak', frequency: 400, gain: 3.0, q: 0.8 }, { type: 'Peak', frequency: 3000, gain: -2.0, q: 1.5 }, ], details: { science: "Unlike traditional metal, this style emphasizes a thick, fuzzy low-midrange. The boost at 400Hz creates that signature 'sludgy' guitar tone, while a cut in the upper-mids prevents the sound from becoming too harsh and maintains a hazy, washed-out feel.", tuning: "The 400Hz boost is key. Adjust its gain and Q to control the amount of 'fuzz'. A slight high-shelf cut above 8kHz can further enhance the vintage, lo-fi vibe." } },
+            'Acoustic': { category: 'genre', short_description: 'Clean and natural with enhanced string detail.', bands: [ { type: 'Highpass', frequency: 40, gain: 0, q: 1.0 }, { type: 'Peak', frequency: 200, gain: -2.5, q: 1.5 }, { type: 'Peak', frequency: 2500, gain: 2.0, q: 2.5 }, { type: 'Peak', frequency: 10000, gain: 1.5, q: 2.0 }, ], details: { science: "A high-pass filter removes unwanted low-frequency rumble. The cut at 200Hz addresses the 'boominess' of an acoustic guitar's body, cleaning up the sound. Boosts at 2.5kHz and 10kHz enhance string attack and harmonic detail, respectively.", tuning: "The 200Hz cut is crucial; adjust its frequency between 150-250Hz to match the specific guitar recording. If the sound is too thin, reduce the amount of this cut." } },
+            'Classical': { category: 'genre', short_description: 'Preserves dynamic range with added air and space.', bands: [ { type: 'Highpass', frequency: 35, gain: 0, q: 0.8 }, { type: 'Peak', frequency: 200, gain: -1.0, q: 1.0 }, { type: 'High Shelf', frequency: 10000, gain: 1.5, q: 0.7 }, ], details: { science: "The focus here is on preserving dynamic range and natural timbre. A gentle high-pass filter removes stage rumble without affecting cellos or double basses. A very slight dip at 200Hz can reduce 'hall boom' in some recordings, and a subtle high-shelf adds 'air' and space.", tuning: "Less is more. These adjustments should be almost imperceptible. If the recording is pristine, use the 'Analytical & Reference' preset instead." } },
+            'Electronic/Dance': { category: 'genre', short_description: 'A deep "V-shape" for powerful bass and crisp highs.', bands: [ { type: 'Low Shelf', frequency: 100, gain: 4.0, q: 0.8 }, { type: 'Peak', frequency: 500, gain: -2.0, q: 1.2 }, { type: 'High Shelf', frequency: 10000, gain: 3.0, q: 0.9 }, ], details: { science: "This is a classic 'V-shape' or 'scooped' EQ. It heavily boosts the sub-bass and bass for a powerful kick and bassline, while also boosting the high frequencies for crisp hi-hats and synthesizers. The cut in the midrange creates space and prevents the mix from sounding cluttered.", tuning: "Be careful with the bass boost on systems that can't handle it. If the mix sounds hollow, reduce the 500Hz cut. Adjust the high-shelf frequency to control the amount of 'sizzle'." } },
+            'R&B': { category: 'genre', short_description: 'Smooth, deep bass and lush, present vocals.', bands: [ { type: 'Low Shelf', frequency: 90, gain: 3.0, q: 0.7 }, { type: 'Peak', frequency: 400, gain: -1.5, q: 1.4 }, { type: 'High Shelf', frequency: 11000, gain: 2.5, q: 0.7 }, ], details: { science: "This preset delivers a smooth, deep bass, clean mids for lush vocals and keyboards, and crisp, airy highs. The cut at 400Hz prevents the low-end from sounding muddy and helps the vocals sit perfectly in the mix.", tuning: "To emphasize a modern, 808-style bass, increase the gain on the low-shelf. For a more vintage, soulful sound, lower the high-shelf frequency to around 8kHz." } },
+            'Rap / Hip-Hop': { category: 'genre', short_description: 'Hard-hitting kick drums and forward vocals.', bands: [ { type: 'Peak', frequency: 60, gain: 4.5, q: 1.0 }, { type: 'Peak', frequency: 2000, gain: 2.5, q: 1.5 }, { type: 'Peak', frequency: 5000, gain: -2.0, q: 2.0 }, ], details: { science: "This profile focuses on the two most important elements: the beat and the vocal. A strong boost at 60Hz gives the kick drum or 808 bass immense power. A boost at 2kHz brings the vocal forward, ensuring lyrical clarity. A small cut at 5kHz can tame any harshness in the vocal track or hi-hats.", tuning: "The 60Hz boost is powerful; adjust it based on your headphones/speakers. If the vocal is still not clear enough, widen the Q on the 2kHz boost." } },
+            'Country': { category: 'genre', short_description: 'Emphasizes midrange "twang" and vocal clarity.', bands: [ { type: 'Peak', frequency: 120, gain: 1.5, q: 1.0 }, { type: 'Peak', frequency: 1500, gain: 3.0, q: 1.2 }, { type: 'Peak', frequency: 3500, gain: -1.5, q: 2.0 }, ], details: { science: "Country music lives in the midrange. This preset boosts 1.5kHz to bring out the twang of guitars and the core of the vocals. A small bass boost adds fullness. A slight cut at 3.5kHz prevents the sound from becoming too nasally or harsh, a common issue with country vocal mixing.", tuning: "For modern country with more pop elements, add a high-shelf above 10kHz. For older, more traditional country, you may want to cut frequencies below 50Hz." } },
+            'Funk & Soul': { category: 'genre', short_description: 'Punchy basslines and warm, articulate mids.', bands: [ { type: 'Peak', frequency: 80, gain: 2.5, q: 1.5 }, { type: 'Peak', frequency: 600, gain: 2.0, q: 1.2 }, { type: 'Peak', frequency: 2500, gain: 2.0, q: 1.8 }, ], details: { science: "This preset emphasizes the 'groove'. A tight boost at 80Hz makes the bassline and kick drum punchy. A boost at 600Hz brings out the body of the snare drum and the warmth of horn sections, while a 2.5kHz boost highlights the 'slap' of the bass and guitar articulation.", tuning: "The interplay between 80Hz and 600Hz is key. Adjust their gains to balance punch with warmth. A small cut around 300Hz can clean up any mud if needed." } },
+            'Reggae': { category: 'genre', short_description: 'Massive, warm low-end with a relaxed top end.', bands: [ { type: 'Peak', frequency: 60, gain: 4.0, q: 0.9 }, { type: 'Peak', frequency: 120, gain: 2.0, q: 1.0 }, { type: 'High Shelf', frequency: 7000, gain: -3.0, q: 0.7 }, ], details: { science: "In reggae, the bass is the lead instrument. This EQ creates a massive low-end foundation with boosts at both 60Hz and 120Hz to cover the sub-bass and the main bassline. A high-shelf cut rolls off the treble for a classic, warm, and laid-back sound, focusing all attention on the rhythm section.", tuning: "Adjust the gain at 60Hz to control the 'wobble'. If the sound is too dark, reduce the high-shelf cut or move its frequency higher." } },
+            'Folk': { category: 'genre', short_description: 'Natural and clear, focused on the vocal storyteller.', bands: [ { type: 'Highpass', frequency: 50, gain: 0, q: 0.8 }, { type: 'Peak', frequency: 300, gain: -1.5, q: 1.5 }, { type: 'Peak', frequency: 2000, gain: 2.0, q: 2.0 }, ], details: { science: "Similar to the 'Acoustic' preset, the goal is naturalness. A high-pass filter cleans up low-end rumble. A small cut in the low-mids prevents boominess from acoustic guitars or upright bass, while a gentle boost at 2kHz ensures the vocals and storytelling are clear and present.", tuning: "This is a subtle preset. The main adjustment should be the 300Hz cut; move it around to find the resonant frequency of the main instrument and gently reduce it." } },
+            'Ambient': { category: 'genre', short_description: 'Wide, spacious, and atmospheric.', bands: [ { type: 'Peak', frequency: 800, gain: -3.0, q: 0.8 }, { type: 'High Shelf', frequency: 8000, gain: 2.5, q: 1.0 }, ], details: { science: "This preset aims to create a wide, spacious, and atmospheric soundstage. A broad cut in the midrange carves out space, pushing the core elements back and creating a sense of depth. A high-shelf boost adds 'air' and enhances the texture of pads and soundscapes.", tuning: "For a darker, more drone-like ambient, reduce or remove the high-shelf boost. For a more ethereal sound, make the midrange cut deeper or wider (lower Q)." } },
+            'Live Concert': {
                 category: 'genre',
-                color: '#EF4444', // Red-500
-                short_description: 'A classic "smiley face" curve for punch and crunch.',
+                short_description: 'Simulates live energy with enhanced crowd and space.',
                 bands: [
-                    { type: 'Peak', frequency: 100, gain: 2.0, q: 1.0 },
-                    { type: 'Peak', frequency: 1500, gain: 2.5, q: 1.2 },
-                    { type: 'Peak', frequency: 4000, gain: 1.5, q: 2.0 },
+                    { type: 'Low Shelf', frequency: 100, gain: 1.5, q: 0.7 },
+                    { type: 'Peak', frequency: 350, gain: -2.0, q: 1.2 },
+                    { type: 'High Shelf', frequency: 9000, gain: 2.0, q: 0.7 },
                 ],
                 details: {
-                    science: "Often called a 'smiley face' curve, this boosts the bass for punchy kick drums and bass guitars, and the upper-mids to bring out the crunch of electric guitars and the snap of the snare.",
-                    tuning: "For 70s rock with less sub-bass, focus the low-end boost around 120-150Hz. For modern rock, you can add a high-shelf filter above 10kHz for more 'air'."
+                    science: "This preset aims to capture the energy of a live performance. A gentle low-shelf adds weight to the overall sound. A cut in the low-mids (~350Hz) helps reduce the 'hall boom' or muddiness common in live recordings. A high-shelf boost adds 'air' and enhances the sense of space and crowd noise.",
+                    tuning: "The 350Hz cut is key for clarity; adjust its frequency to tame the specific boominess of the recording. If the crowd noise becomes too distracting, lower the high-shelf gain."
                 }
             },
-            'Pop': {
-                category: 'genre',
-                color: '#EC4899', // Pink-500
-                short_description: 'Clean, powerful bass with bright, airy vocals.',
-                bands: [
-                    { type: 'Low Shelf', frequency: 80, gain: 2.5, q: 0.71 },
-                    { type: 'Peak', frequency: 3000, gain: 2.0, q: 2.0 },
-                    { type: 'High Shelf', frequency: 12000, gain: 3.0, q: 0.71 },
-                ],
-                details: {
-                    science: "Modern pop music relies on a strong, clean low-end and bright, clear vocals. This preset provides a solid sub-bass foundation, a vocal clarity boost, and a high-shelf for that polished 'sheen' and 'air'.",
-                    tuning: "The high-shelf can exaggerate sibilance on some tracks; if so, change it to a peak filter around 8-10kHz instead. The bass shelf can be adjusted to taste for more or less thump."
-                }
-            },
-            'Jazz': {
-                category: 'genre',
-                color: '#FBBF24', // Amber-400
-                short_description: 'Natural timbre with detailed highs and warm mids.',
-                 bands: [
-                    { type: 'Peak', frequency: 200, gain: 1.5, q: 1.0 },
-                    { type: 'Peak', frequency: 2500, gain: -1.5, q: 2.0 },
-                    { type: 'Peak', frequency: 7000, gain: 2.0, q: 3.0 },
-                ],
-                details: {
-                    science: "This preset aims for a natural, dynamic sound. A small boost in the low-mids adds body to upright bass and piano. A slight dip in the presence region prevents horns from sounding too harsh, while a narrow peak in the treble brings out the intricate details of cymbals and brushes.",
-                    tuning: "For older jazz recordings, you might want to cut some frequencies below 60Hz to reduce rumble. For more saxophone presence, slightly reduce the 2500Hz cut."
-                }
-            },
-             'Metal': {
-                category: 'genre',
-                color: '#991B1B', // Red-800
-                short_description: 'Aggressive sound with scooped mids and sharp attack.',
-                bands: [
-                    { type: 'Peak', frequency: 80, gain: 3.0, q: 1.2 },
-                    { type: 'Peak', frequency: 800, gain: -4.0, q: 1.0 },
-                    { type: 'Peak', frequency: 4000, gain: 3.5, q: 1.5 },
-                ],
-                details: {
-                    science: "The quintessential 'scooped mids' profile for metal. It boosts the low end for powerful kick drums and bass, makes a deep cut in the midrange to reduce 'boxiness' and make room for distorted guitars, and boosts the upper-mids for aggressive guitar attack and vocal clarity.",
-                    tuning: "The 800Hz cut is defining; move it between 500Hz and 1kHz to find the sweet spot. For more 'djent' or modern metal tones, make the Q on the 80Hz boost narrower (e.g., 1.8)."
-                }
-            },
-            'Desert Metal': {
-                category: 'genre',
-                color: '#CA8A04', // Yellow-600
-                short_description: 'Thick, fuzzy, and sludgy low-mids.',
-                bands: [
-                    { type: 'Low Shelf', frequency: 100, gain: 2.0, q: 0.7 },
-                    { type: 'Peak', frequency: 400, gain: 3.0, q: 0.8 },
-                    { type: 'Peak', frequency: 3000, gain: -2.0, q: 1.5 },
-                ],
-                details: {
-                    science: "Unlike traditional metal, this style emphasizes a thick, fuzzy low-midrange. The boost at 400Hz creates that signature 'sludgy' guitar tone, while a cut in the upper-mids prevents the sound from becoming too harsh and maintains a hazy, washed-out feel.",
-                    tuning: "The 400Hz boost is key. Adjust its gain and Q to control the amount of 'fuzz'. A slight high-shelf cut above 8kHz can further enhance the vintage, lo-fi vibe."
-                }
-            },
-            'Acoustic': {
-                category: 'genre',
-                color: '#5EEAD4', // Teal-300
-                short_description: 'Clean and natural with enhanced string detail.',
-                bands: [
-                    { type: 'Highpass', frequency: 40, gain: 0, q: 1.0 },
-                    { type: 'Peak', frequency: 200, gain: -2.5, q: 1.5 },
-                    { type: 'Peak', frequency: 2500, gain: 2.0, q: 2.5 },
-                    { type: 'Peak', frequency: 10000, gain: 1.5, q: 2.0 },
-                ],
-                details: {
-                    science: "A high-pass filter removes unwanted low-frequency rumble. The cut at 200Hz addresses the 'boominess' of an acoustic guitar's body, cleaning up the sound. Boosts at 2.5kHz and 10kHz enhance string attack and harmonic detail, respectively.",
-                    tuning: "The 200Hz cut is crucial; adjust its frequency between 150-250Hz to match the specific guitar recording. If the sound is too thin, reduce the amount of this cut."
-                }
-            },
-            'Classical': {
-                category: 'genre',
-                color: '#BFDBFE', // Blue-200
-                short_description: 'Preserves dynamic range with added air and space.',
-                bands: [
-                    { type: 'Highpass', frequency: 35, gain: 0, q: 0.8 },
-                    { type: 'Peak', frequency: 200, gain: -1.0, q: 1.0 },
-                    { type: 'High Shelf', frequency: 10000, gain: 1.5, q: 0.7 },
-                ],
-                details: {
-                    science: "The focus here is on preserving dynamic range and natural timbre. A gentle high-pass filter removes stage rumble without affecting cellos or double basses. A very slight dip at 200Hz can reduce 'hall boom' in some recordings, and a subtle high-shelf adds 'air' and space.",
-                    tuning: "Less is more. These adjustments should be almost imperceptible. If the recording is pristine, use the 'Analytical & Reference' preset instead."
-                }
-            },
-            'Electronic/Dance': {
-                category: 'genre',
-                color: '#C026D3', // Fuchsia-600
-                short_description: 'A deep "V-shape" for powerful bass and crisp highs.',
-                bands: [
-                    { type: 'Low Shelf', frequency: 100, gain: 4.0, q: 0.8 },
-                    { type: 'Peak', frequency: 500, gain: -2.0, q: 1.2 },
-                    { type: 'High Shelf', frequency: 10000, gain: 3.0, q: 0.9 },
-                ],
-                details: {
-                    science: "This is a classic 'V-shape' or 'scooped' EQ. It heavily boosts the sub-bass and bass for a powerful kick and bassline, while also boosting the high frequencies for crisp hi-hats and synthesizers. The cut in the midrange creates space and prevents the mix from sounding cluttered.",
-                    tuning: "Be careful with the bass boost on systems that can't handle it. If the mix sounds hollow, reduce the 500Hz cut. Adjust the high-shelf frequency to control the amount of 'sizzle'."
-                }
-            },
-            'R&B': {
-                category: 'genre',
-                color: '#D946EF', // Fuchsia-500
-                short_description: 'Smooth, deep bass and lush, present vocals.',
-                bands: [
-                    { type: 'Low Shelf', frequency: 90, gain: 3.0, q: 0.7 },
-                    { type: 'Peak', frequency: 400, gain: -1.5, q: 1.4 },
-                    { type: 'High Shelf', frequency: 11000, gain: 2.5, q: 0.7 },
-                ],
-                details: {
-                    science: "This preset delivers a smooth, deep bass, clean mids for lush vocals and keyboards, and crisp, airy highs. The cut at 400Hz prevents the low-end from sounding muddy and helps the vocals sit perfectly in the mix.",
-                    tuning: "To emphasize a modern, 808-style bass, increase the gain on the low-shelf. For a more vintage, soulful sound, lower the high-shelf frequency to around 8kHz."
-                }
-            },
-            'Rap / Hip-Hop': {
-                category: 'genre',
-                color: '#10B981', // Emerald-500
-                short_description: 'Hard-hitting kick drums and forward vocals.',
-                bands: [
-                    { type: 'Peak', frequency: 60, gain: 4.5, q: 1.0 },
-                    { type: 'Peak', frequency: 2000, gain: 2.5, q: 1.5 },
-                    { type: 'Peak', frequency: 5000, gain: -2.0, q: 2.0 },
-                ],
-                details: {
-                    science: "This profile focuses on the two most important elements: the beat and the vocal. A strong boost at 60Hz gives the kick drum or 808 bass immense power. A boost at 2kHz brings the vocal forward, ensuring lyrical clarity. A small cut at 5kHz can tame any harshness in the vocal track or hi-hats.",
-                    tuning: "The 60Hz boost is powerful; adjust it based on your headphones/speakers. If the vocal is still not clear enough, widen the Q on the 2kHz boost."
-                }
-            },
-            'Country': {
-                category: 'genre',
-                color: '#F59E0B', // Amber-500
-                short_description: 'Emphasizes midrange "twang" and vocal clarity.',
-                bands: [
-                    { type: 'Peak', frequency: 120, gain: 1.5, q: 1.0 },
-                    { type: 'Peak', frequency: 1500, gain: 3.0, q: 1.2 },
-                    { type: 'Peak', frequency: 3500, gain: -1.5, q: 2.0 },
-                ],
-                details: {
-                    science: "Country music lives in the midrange. This preset boosts 1.5kHz to bring out the twang of guitars and the core of the vocals. A small bass boost adds fullness. A slight cut at 3.5kHz prevents the sound from becoming too nasally or harsh, a common issue with country vocal mixing.",
-                    tuning: "For modern country with more pop elements, add a high-shelf above 10kHz. For older, more traditional country, you may want to cut frequencies below 50Hz."
-                }
-            },
-            'Funk & Soul': {
-                category: 'genre',
-                color: '#84CC16', // Lime-500
-                short_description: 'Punchy basslines and warm, articulate mids.',
-                bands: [
-                    { type: 'Peak', frequency: 80, gain: 2.5, q: 1.5 },
-                    { type: 'Peak', frequency: 600, gain: 2.0, q: 1.2 },
-                    { type: 'Peak', frequency: 2500, gain: 2.0, q: 1.8 },
-                ],
-                details: {
-                    science: "This preset emphasizes the 'groove'. A tight boost at 80Hz makes the bassline and kick drum punchy. A boost at 600Hz brings out the body of the snare drum and the warmth of horn sections, while a 2.5kHz boost highlights the 'slap' of the bass and guitar articulation.",
-                    tuning: "The interplay between 80Hz and 600Hz is key. Adjust their gains to balance punch with warmth. A small cut around 300Hz can clean up any mud if needed."
-                }
-            },
-            'Reggae': {
-                category: 'genre',
-                color: '#16A34A', // Green-600
-                short_description: 'Massive, warm low-end with a relaxed top end.',
-                bands: [
-                    { type: 'Peak', frequency: 60, gain: 4.0, q: 0.9 },
-                    { type: 'Peak', frequency: 120, gain: 2.0, q: 1.0 },
-                    { type: 'High Shelf', frequency: 7000, gain: -3.0, q: 0.7 },
-                ],
-                details: {
-                    science: "In reggae, the bass is the lead instrument. This EQ creates a massive low-end foundation with boosts at both 60Hz and 120Hz to cover the sub-bass and the main bassline. A high-shelf cut rolls off the treble for a classic, warm, and laid-back sound, focusing all attention on the rhythm section.",
-                    tuning: "Adjust the gain at 60Hz to control the 'wobble'. If the sound is too dark, reduce the high-shelf cut or move its frequency higher."
-                }
-            },
-            'Folk': {
-                category: 'genre',
-                color: '#A16207', // Yellow-700
-                short_description: 'Natural and clear, focused on the vocal storyteller.',
-                bands: [
-                    { type: 'Highpass', frequency: 50, gain: 0, q: 0.8 },
-                    { type: 'Peak', frequency: 300, gain: -1.5, q: 1.5 },
-                    { type: 'Peak', frequency: 2000, gain: 2.0, q: 2.0 },
-                ],
-                details: {
-                    science: "Similar to the 'Acoustic' preset, the goal is naturalness. A high-pass filter cleans up low-end rumble. A small cut in the low-mids prevents boominess from acoustic guitars or upright bass, while a gentle boost at 2kHz ensures the vocals and storytelling are clear and present.",
-                    tuning: "This is a subtle preset. The main adjustment should be the 300Hz cut; move it around to find the resonant frequency of the main instrument and gently reduce it."
-                }
-            },
-            'Ambient': {
-                category: 'genre',
-                color: '#8B5CF6', // Violet-500
-                short_description: 'Wide, spacious, and atmospheric.',
-                bands: [
-                    { type: 'Peak', frequency: 800, gain: -3.0, q: 0.8 },
-                    { type: 'High Shelf', frequency: 8000, gain: 2.5, q: 1.0 },
-                ],
-                details: {
-                    science: "This preset aims to create a wide, spacious, and atmospheric soundstage. A broad cut in the midrange carves out space, pushing the core elements back and creating a sense of depth. A high-shelf boost adds 'air' and enhances the texture of pads and soundscapes.",
-                    tuning: "For a darker, more drone-like ambient, reduce or remove the high-shelf boost. For a more ethereal sound, make the midrange cut deeper or wider (lower Q)."
-                }
-            }
         };
 
         // --- D3.JS VISUALIZATION SETUP ---
         const svg = d3.select("#eq-svg");
         const visualizer = document.getElementById('visualizer');
-        const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+        const margin = { top: 20, right: 30, bottom: 40, left: 50 };
         let width, height;
 
         const x = d3.scaleLog().domain([20, 20000]);
@@ -514,13 +340,11 @@
 
         function getGainAtFrequency(freq, band) {
             const { type, frequency, gain, q } = band;
-            // This is a simplified model for visualization, not a precise DSP algorithm.
             switch (type) {
                 case 'Peak': {
-                    const G = gain;
                     const x_val = (Math.pow(freq, 2) - Math.pow(frequency, 2));
                     const y_val = (freq * (frequency / q));
-                    return G / Math.sqrt(1 + Math.pow(x_val / y_val, 2));
+                    return gain / Math.sqrt(1 + Math.pow(x_val / y_val, 2));
                 }
                 case 'Low Shelf': {
                      return gain / (1 + Math.pow(freq / frequency, 2*q));
@@ -529,8 +353,12 @@
                     return gain / (1 + Math.pow(frequency / freq, 2*q));
                 }
                 case 'Highpass': {
-                    const n = 4; // 24dB/octave slope
-                    return -60 / (1 + Math.pow(frequency / freq, n * 2));
+                    // Improved Butterworth filter approximation for a smoother visual roll-off
+                    const n = 4; // 4th order filter (24dB/octave)
+                    const normalizedFreq = freq / frequency;
+                    const attenuation = 1 / Math.sqrt(1 + Math.pow(1 / normalizedFreq, 2 * n));
+                    // Map attenuation (0 to 1) to a large negative dB value for visualization
+                    return (attenuation - 1) * 24; // Starts at 0dB and rolls off
                 }
                 default:
                     return 0;
@@ -547,21 +375,41 @@
             x.range([margin.left, width - margin.right]);
             y.range([height - margin.bottom, margin.top]);
 
-            // Clear previous axes and grid
-            svg.selectAll('.axis').remove();
-            svg.selectAll('.grid-line').remove();
-            svg.selectAll('.zero-db-line').remove();
+            svg.selectAll('*').remove(); // Clear everything for a clean redraw
+
+            // Re-add defs
+            svg.html(`<defs>
+                        <linearGradient id="curve-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="var(--vapor-purple)" />
+                            <stop offset="50%" stop-color="var(--vapor-pink)" />
+                            <stop offset="100%" stop-color="var(--vapor-cyan)" />
+                        </linearGradient>
+                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="4" result="coloredBlur"></feGaussianBlur>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"></feMergeNode>
+                                <feMergeNode in="SourceGraphic"></feMergeNode>
+                            </feMerge>
+                        </filter>
+                    </defs>`);
+
+            const tickValues = [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
+            const majorTickValues = [100, 1000, 10000];
 
             xAxis = g => g
                 .attr("transform", `translate(0,${height - margin.bottom})`)
                 .call(d3.axisBottom(x)
-                    .tickValues([20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000])
-                    .tickFormat(d3.format("~s")))
-                .call(g => g.select(".domain").remove());
+                    .tickValues(tickValues)
+                    .tickFormat(d => {
+                        if (d >= 1000) return (d / 1000) + 'k';
+                        return d;
+                    }))
+                .call(g => g.select(".domain").remove())
+                .call(g => g.selectAll(".tick text").attr("font-size", "0.75rem"));
 
             yAxis = g => g
                 .attr("transform", `translate(${margin.left},0)`)
-                .call(d3.axisLeft(y).ticks(8).tickFormat(d => d === 0 ? '0dB' : (d > 0 ? `+${d}` : d)))
+                .call(d3.axisLeft(y).ticks(6).tickFormat(d => d === 0 ? '0dB' : (d > 0 ? `+${d}` : d)))
                 .call(g => g.select(".domain").remove())
                 .call(g => g.selectAll(".tick line").clone()
                     .attr("class", "grid-line")
@@ -569,7 +417,7 @@
             
             grid = g => g
                 .selectAll(".grid-line-x")
-                .data([20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000])
+                .data(majorTickValues) // Only draw vertical lines for major ticks
                 .join("line")
                 .attr("class", "grid-line")
                 .attr("x1", d => x(d))
@@ -581,15 +429,15 @@
             svg.append("g").attr("class", "axis").call(yAxis);
             svg.append("g").call(grid);
             
-            // Add center line for 0dB reference
             svg.append("line")
                 .attr("class", "zero-db-line")
                 .attr("x1", margin.left)
                 .attr("y1", y(0))
                 .attr("x2", width - margin.right)
                 .attr("y2", y(0));
-
-            updateCurve([], '#3B82F6'); // Initial flat line
+            
+            path = svg.append("path").attr("class", "response-curve"); // Re-append path
+            updateCurve([], 'url(#curve-gradient)');
         }
 
         function updateCurve(bands, color) {
@@ -599,7 +447,7 @@
                 .duration(750)
                 .ease(d3.easeCubicOut)
                 .attr("d", line)
-                .attr("stroke", color);
+                .attr("stroke", color || 'url(#curve-gradient)');
         }
 
         // --- UI LOGIC ---
@@ -629,31 +477,47 @@
         });
 
         function selectPreset(name, buttonEl) {
-            // Update active button
             document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
             buttonEl.classList.add('active');
 
             const preset = eqPresets[name];
             
-            // Update curve
             updateCurve(preset.bands, preset.color);
-
-            // Update description
             presetDescription.textContent = preset.short_description;
             presetDescription.classList.remove('opacity-0');
 
-            // Populate and show details
+            paramsDisplay.innerHTML = ''; // Clear previous params
             if (preset.bands.length > 0) {
-                paramsDisplay.innerHTML = preset.bands.map(b => 
-                   `<div class="flex justify-between items-center bg-gray-700/50 p-2 rounded">
-                        <span>${b.type.padEnd(10, ' ')}</span>
-                        <span class="text-cyan-400">${String(b.frequency).padStart(5)}Hz</span>
-                        <span class="text-pink-400">${b.gain > 0 ? '+' : ''}${b.gain.toFixed(1)}dB</span>
-                        <span class="text-purple-400">Q:${b.q.toFixed(2)}</span>
-                    </div>`
-                ).join('');
+                // Add headers for the grid
+                ['Type', 'Freq', 'Gain', 'Q'].forEach(header => {
+                    const headerEl = document.createElement('span');
+                    headerEl.className = 'text-gray-500 font-semibold';
+                    headerEl.textContent = header;
+                    paramsDisplay.appendChild(headerEl);
+                });
+
+                preset.bands.forEach(b => {
+                    const typeEl = document.createElement('span');
+                    typeEl.textContent = b.type;
+                    paramsDisplay.appendChild(typeEl);
+
+                    const freqEl = document.createElement('span');
+                    freqEl.className = 'text-cyan-400';
+                    freqEl.textContent = `${b.frequency}Hz`;
+                    paramsDisplay.appendChild(freqEl);
+
+                    const gainEl = document.createElement('span');
+                    gainEl.className = 'text-pink-400';
+                    gainEl.textContent = `${b.gain > 0 ? '+' : ''}${b.gain.toFixed(1)}dB`;
+                    paramsDisplay.appendChild(gainEl);
+
+                    const qEl = document.createElement('span');
+                    qEl.className = 'text-purple-400';
+                    qEl.textContent = b.q.toFixed(2);
+                    paramsDisplay.appendChild(qEl);
+                });
             } else {
-                paramsDisplay.innerHTML = `<div class="text-center text-gray-400 p-2 rounded">No adjustments (Flat Response)</div>`;
+                paramsDisplay.innerHTML = `<div class="col-span-4 text-center text-gray-400 p-2 rounded">No adjustments (Flat Response)</div>`;
             }
             scienceText.textContent = preset.details.science;
             tuningText.textContent = preset.details.tuning;
