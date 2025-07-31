@@ -14,6 +14,7 @@
             --vapor-pink: #F472B6;
             --vapor-cyan: #2DD4BF;
             --vapor-purple: #A78BFA;
+            --vapor-yellow: #FDE047;
             --bg-dark: #111827;
             --bg-medium: #1F2937;
             --text-light: #E5E7EB;
@@ -353,11 +354,9 @@
                     return gain / (1 + Math.pow(frequency / freq, 2*q));
                 }
                 case 'Highpass': {
-                    // Improved Butterworth filter approximation for a smoother visual roll-off
                     const n = 4; // 4th order filter (24dB/octave)
                     const normalizedFreq = freq / frequency;
                     const attenuation = 1 / Math.sqrt(1 + Math.pow(1 / normalizedFreq, 2 * n));
-                    // Map attenuation (0 to 1) to a large negative dB value for visualization
                     return (attenuation - 1) * 24; // Starts at 0dB and rolls off
                 }
                 default:
@@ -377,7 +376,6 @@
 
             svg.selectAll('*').remove(); // Clear everything for a clean redraw
 
-            // Re-add defs
             svg.html(`<defs>
                         <linearGradient id="curve-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                             <stop offset="0%" stop-color="var(--vapor-purple)" />
@@ -502,17 +500,17 @@
                     paramsDisplay.appendChild(typeEl);
 
                     const freqEl = document.createElement('span');
-                    freqEl.className = 'text-cyan-400';
+                    freqEl.style.color = 'var(--vapor-purple)';
                     freqEl.textContent = `${b.frequency}Hz`;
                     paramsDisplay.appendChild(freqEl);
 
                     const gainEl = document.createElement('span');
-                    gainEl.className = 'text-pink-400';
+                    gainEl.style.color = b.gain > 0 ? 'var(--vapor-cyan)' : 'var(--vapor-pink)';
                     gainEl.textContent = `${b.gain > 0 ? '+' : ''}${b.gain.toFixed(1)}dB`;
                     paramsDisplay.appendChild(gainEl);
 
                     const qEl = document.createElement('span');
-                    qEl.className = 'text-purple-400';
+                    qEl.style.color = 'var(--vapor-yellow)';
                     qEl.textContent = b.q.toFixed(2);
                     paramsDisplay.appendChild(qEl);
                 });
